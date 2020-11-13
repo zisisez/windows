@@ -17808,9 +17808,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 window.addEventListener('DOMContentLoaded', function () {
-  'use strict';
+  'use strict'; //! Пустой объект в который записываем данные из модальных окон ( Инпут, Селект и тд)
 
-  var modalState = {};
+  var modalState = {}; //! Задаем конец отсчета таймера
+
   var deadline = '2020-11-29';
   Object(_moduls_changeModalState__WEBPACK_IMPORTED_MODULE_4__["default"])(modalState);
   Object(_moduls_modals__WEBPACK_IMPORTED_MODULE_1__["default"])();
@@ -17840,32 +17841,38 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var changeModalState = function changeModalState(state) {
+  //! Забираем все необходимые элементы и инпуты
   var windowForm = document.querySelectorAll('.balcon_icons_img'),
       windowWidth = document.querySelectorAll('#width'),
       windowHeight = document.querySelectorAll('#height'),
       windowType = document.querySelectorAll('#view_type'),
-      windowProfile = document.querySelectorAll('.checkbox');
+      windowProfile = document.querySelectorAll('.checkbox'); //! Проверяем валидацию ввода цифр
+
   Object(_checkNumInputs__WEBPACK_IMPORTED_MODULE_1__["default"])('#width');
-  Object(_checkNumInputs__WEBPACK_IMPORTED_MODULE_1__["default"])('#height');
+  Object(_checkNumInputs__WEBPACK_IMPORTED_MODULE_1__["default"])('#height'); //! Вешаем на каждый элемент событие 
 
   function bindActionToElems(event, elem, prop) {
     elem.forEach(function (item, i) {
       item.addEventListener(event, function () {
+        //! Проверяем какое конкретно событие происходит Спан, Инпут или Селект
         switch (item.nodeName) {
+          //! Если ввод в Спан то записываем значение в modalState в main.js
           case 'SPAN':
             state[prop] = i;
             break;
+          //! Если ввод в инпут, проверяем чекбокс ли это 
 
           case 'INPUT':
             if (item.getAttribute('type') === 'checkbox') {
               i === 0 ? state[prop] = 'Cold' : state[prop] = 'Hot';
               elem.forEach(function (box, j) {
+                //! Если это чекбокс, то выбраному ставим галочку а со второго убираем
                 box.checked = false;
 
                 if (i == j) {
                   box.checked = true;
                 }
-              });
+              }); //! Если это не чекбокс, записываем знаачение в modalState в main.js
             } else {
               state[prop] = item.value;
             }
@@ -17873,6 +17880,7 @@ var changeModalState = function changeModalState(state) {
             break;
 
           case 'SELECT':
+            //! Если Селекс, просто записываем значение
             state[prop] = item.value;
             break;
         }
@@ -17880,7 +17888,8 @@ var changeModalState = function changeModalState(state) {
         console.log(state);
       });
     });
-  }
+  } //! Вызываем функцию для всех элементов с нужными аргументами
+
 
   bindActionToElems('click', windowForm, 'form');
   bindActionToElems('input', windowHeight, 'height');
@@ -17910,11 +17919,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var checkNumInputs = function checkNumInputs(selector) {
-  var numInputs = document.querySelectorAll(selector);
+  var numInputs = document.querySelectorAll(selector); //! Функция проверки ввода цифр в инпут
+
   numInputs.forEach(function (item) {
-    //Функция проверки ввода цифр в инпут
     item.addEventListener('input', function () {
-      item.value = item.value.replace(/\D/, ''); //регулярное выражение где Д - все НЕ цифры
+      //! регулярное выражение где Д - все НЕ цифры
+      item.value = item.value.replace(/\D/, '');
     });
   });
 };
@@ -17951,16 +17961,16 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var forms = function forms(state) {
+  //! Получаем необходимые элемнты со страницы
   var form = document.querySelectorAll('form'),
-      // Получаем необходимые элемнты со страницы
-  inputs = document.querySelectorAll('input');
-  Object(_checkNumInputs__WEBPACK_IMPORTED_MODULE_5__["default"])('input[name="user_phone"]');
+      inputs = document.querySelectorAll('input');
+  Object(_checkNumInputs__WEBPACK_IMPORTED_MODULE_5__["default"])('input[name="user_phone"]'); //! Объект с сообщениями которые увидит пользователь
+
   var message = {
-    // Объект с сообщениями которые увидит пользователь
     loading: 'Loading...',
     success: 'Success.',
     failure: 'FAIL!'
-  };
+  }; //! Функция отправки данных на сервер
 
   var postData = function postData(url, data) {
     var res;
@@ -17968,12 +17978,11 @@ var forms = function forms(state) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            //Функция отправки данных на сервер
-            document.querySelector('.status').textContent = message.loading; //Вывести сообщение в созданный элемент
+            //! Вывести сообщение в созданный элемент
+            document.querySelector('.status').textContent = message.loading; //! Фетч отправит запрос по юрл, с данными data
 
             _context.next = 3;
             return regeneratorRuntime.awrap(fetch(url, {
-              //Фетч отправит запрос по юрл, с данными data
               method: 'POST',
               body: data
             }));
@@ -17992,42 +18001,43 @@ var forms = function forms(state) {
         }
       }
     });
-  };
+  }; //! Функция очистки инпута после отправки запроса
+
 
   var clearInputs = function clearInputs() {
-    //функция очистки инпута после отправки запроса
     inputs.forEach(function (item) {
       item.value = '';
     });
   };
 
   form.forEach(function (item) {
+    //! Перебираем все имеющиеся формы на странице и добавляем обработчик события "отправки"
     item.addEventListener('submit', function (e) {
-      //перебираем все имеющиеся формы на странице и добавляем обработчик события "отправки"
-      e.preventDefault();
-      var statusMessage = document.createElement('div'); //создать новый элемент страницы 
+      e.preventDefault(); //! Создать новый элемент страницы 
 
-      statusMessage.classList.add('status'); //Декорируем элемент существующим классом
+      var statusMessage = document.createElement('div'); //! Декорируем элемент существующим классом
 
-      item.appendChild(statusMessage); //Помещаем новосозданный блок в конец формы которую перебираем
+      statusMessage.classList.add('status'); //! Помещаем новосозданный блок в конец формы которую перебираем
 
-      var formData = new FormData(item); //Поместить все собранные данные в обьект 
+      item.appendChild(statusMessage); //! Поместить все собранные данные в обьект 
+
+      var formData = new FormData(item);
 
       if (item.getAttribute('data-calc') === "end") {
         for (var key in state) {
           formData.append(key, state[key]);
         }
-      }
+      } //! Адресс отправка (в нашем случае локальный файл и данные)
 
-      postData('assets/server.php', formData) //адресс отправка (в нашем случае локальный файл и данные)
+
+      postData('assets/server.php', formData) //! then and catch почитать! Промисы положительно ли выполнен запрос или отрицательно 
       .then(function (res) {
-        //then and catch почитать! Промисы положительно ли выполнен запрос или отрицательно 
         console.log(res);
         statusMessage.textContent = message.success;
       }).catch(function () {
         statusMessage.textContent = message.failure;
-      }).finally(function () {
-        //Промис который выполниться в любом случае
+      }) //! Промис который выполниться в любом случае
+      .finally(function () {
         clearInputs();
         setTimeout(function () {
           statusMessage.remove();
@@ -18051,25 +18061,33 @@ var forms = function forms(state) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 var images = function images() {
+  //! Создаем модалку для изображений и контейнер для самой картинки 
   var imgPopup = document.createElement('div'),
       workSection = document.querySelector('.works'),
-      bigImage = document.createElement('img');
+      bigImage = document.createElement('img'); //! Добавляем имеющиеся классы модалки в новый элемент и вставляем его в родителя картинок
+
   imgPopup.classList.add('popup');
-  workSection.appendChild(imgPopup);
+  workSection.appendChild(imgPopup); //! Выравниваем контент и прячем изначально контейнер
+
   imgPopup.style.justifyContent = 'center';
   imgPopup.style.alignItems = 'center';
-  imgPopup.style.display = 'none';
-  imgPopup.appendChild(bigImage);
+  imgPopup.style.display = 'none'; //! Вставляем созданную картинку в контейнер
+
+  imgPopup.appendChild(bigImage); //! Используем делегирование событий и определяем на какую картинку кликнули
+
   workSection.addEventListener('click', function (e) {
+    //! Вешаем событие клика и убираем стандартное поведение
     e.preventDefault();
-    var target = e.target;
+    var target = e.target; //! Проверяем на наличие необходимого класса у элемента
 
     if (target && target.classList.contains('preview')) {
       imgPopup.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden'; //! Забираем путь и картинки и задаем его в созданный элемент
+
       var path = target.parentNode.getAttribute('href');
       bigImage.setAttribute('src', path);
-    }
+    } //! Есои кликнули на подложку, у которой имеется div.popup то закрывем картинку 
+
 
     if (target && target.matches('div.popup')) {
       imgPopup.style.display = 'none';
@@ -18096,32 +18114,39 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var modals = function modals() {
+  //! Назначаем необходимые аргументы для вызова функции 
   function bindModal(triggerSelector, modalSelector, closeSelector) {
     var closeClickOverlay = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+    //! Находим все нужные элементы страницы в html
     var trigger = document.querySelectorAll(triggerSelector),
         modal = document.querySelector(modalSelector),
         close = document.querySelector(closeSelector),
-        windows = document.querySelectorAll('[data-modal]');
+        windows = document.querySelectorAll('[data-modal]'); //! Проверяем каждую нажатую кнопку на то, что она нажата и убираем стандартное поведение что бы небыло ссылки
+
     trigger.forEach(function (item) {
       item.addEventListener('click', function (e) {
         if (e.target) {
           e.preventDefault();
-        }
+        } //! Добавляем в html дата атрибуты и скрываем изначально все модальные окна
+
 
         windows.forEach(function (item) {
           item.style.display = 'none';
-        });
+        }); //! Показываем модалку по клику которая прошла проверки 
+
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden'; // document.body.classList.add('modal-open')
       });
-    });
+    }); //! Вешаем событие на крестик и прячем по клику модалку
+
     close.addEventListener('click', function () {
       windows.forEach(function (item) {
         item.style.display = 'none';
       });
       modal.style.display = 'none';
       document.body.style.overflow = ''; // document.body.classList.remove('modal-open')
-    });
+    }); //! Вешаем событие на всю модалку, и проверяем нажали на нее либо вне, если вне , закрываем. Если аргумент closeClickOverlay = false, модалка не закроется по клику под подложке
+
     modal.addEventListener('click', function (e) {
       if (e.target === modal && closeClickOverlay) {
         windows.forEach(function (item) {
@@ -18135,6 +18160,7 @@ var modals = function modals() {
   //     modalEngineer = document.querySelector('.popup_engineer'),
   //     modalEngineerClose = document.querySelector('.popup_engineer .popup_close')
   // bindModal(callEngineerBn, modalEngineer, modalEngineerClose)
+  //! Функция показа модалки через назначенное время 
 
 
   function showModalByTyme(selector, time) {
@@ -18142,7 +18168,8 @@ var modals = function modals() {
       document.querySelector(selector).style.display = 'block';
       document.body.style.overflow = 'hidden';
     }, time);
-  }
+  } //! Вызовы всех необходимых модалок
+
 
   bindModal('.popup_engineer_btn', '.popup_engineer', '.popup_engineer .popup_close');
   bindModal('.phone_link', '.popup', '.popup .popup_close');
@@ -18171,34 +18198,39 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+//! Назначаем все необходимые аргументы функции 
 var tabs = function tabs(headerSelector, tabSelector, contentSelector, activeClass) {
   var display = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 'block';
+  //! Забираем все используемые элементы в html
   var header = document.querySelector(headerSelector),
       tab = document.querySelectorAll(tabSelector),
-      content = document.querySelectorAll(contentSelector);
+      content = document.querySelectorAll(contentSelector); //! Функция скрытия всех табов
 
   function hideTabContent() {
     content.forEach(function (item) {
       item.style.display = 'none';
-    });
+    }); //! Убираем класс активности на табе
+
     tab.forEach(function (item) {
       item.classList.remove(activeClass);
     });
-  }
+  } //! Функция показа таба и смена его активности // i - элемент на который нажал пользователь
+
 
   function showTabContent() {
     var i = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-    // i - элемент на который нажал пользователь
     content[i].style.display = display;
     tab[i].classList.add(activeClass);
   }
 
   hideTabContent();
-  showTabContent();
+  showTabContent(); //! Делегирование событий на родителе всех табов, что бы определить по какому элементу кликнули
+
   header.addEventListener('click', function (e) {
-    var target = e.target;
+    var target = e.target; //! Проверяем что кликнули в таб, и что в нем присутствует необходимый класс
 
     if (target && (target.classList.contains(tabSelector.replace(/\./, '')) || target.parentNode.classList.contains(tabSelector.replace(/\./, '')))) {
+      //! Если действительно кликнули в таб убираем старый таб, запускаем функция показа нового таба
       tab.forEach(function (item, i) {
         if (target == item || target.parentNode == item) {
           hideTabContent();
@@ -18223,13 +18255,15 @@ var tabs = function tabs(headerSelector, tabSelector, contentSelector, activeCla
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 var timer = function timer(id, deadline) {
+  //! Функция добавления нуля в таймер, если цифра меньше 10
   var addZero = function addZero(num) {
     if (num <= 9) {
       return '0' + num;
     } else {
       return num;
     }
-  };
+  }; //! Получаем разницу во времени между 1970г и заданым днем и записываем значения в объект
+
 
   var getTimeRemaining = function getTimeRemaining(endtime) {
     var t = Date.parse(endtime) - Date.parse(new Date()),
@@ -18244,7 +18278,8 @@ var timer = function timer(id, deadline) {
       'minutes': minuts,
       'seconds': seconds
     };
-  };
+  }; //! Забираем все элементы их html
+
 
   var setClock = function setClock(selector, endtime) {
     var timer = document.querySelector(selector),
@@ -18252,14 +18287,16 @@ var timer = function timer(id, deadline) {
         hours = timer.querySelector('#hours'),
         minutes = timer.querySelector('#minutes'),
         seconds = timer.querySelector('#seconds'),
-        timeInterval = setInterval(updateClock, 1000);
+        //! Каждую секунду запускаем функцию и пересчитываем остаток
+    timeInterval = setInterval(updateClock, 1000);
 
     function updateClock() {
-      var t = getTimeRemaining(endtime);
+      var t = getTimeRemaining(endtime); //! Добавляем нули к времени в таймер
+
       days.textContent = addZero(t.days);
       hours.textContent = addZero(t.hours);
       minutes.textContent = addZero(t.minutes);
-      seconds.textContent = addZero(t.seconds);
+      seconds.textContent = addZero(t.seconds); //! Проверяем что если таймер закончил отсчет, то устанавливаем все значения в ноль
 
       if (t.total <= 0) {
         days.textContent = '00';
